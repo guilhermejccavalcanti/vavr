@@ -7,59 +7,44 @@ package javaslang.control;
 
 import javaslang.collection.List;
 import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Objects;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ValidationTest {
 
     public static final String OK = "ok";
+
     public static final List<String> ERRORS = List.of("error1", "error2", "error3");
 
     // -- Validation.valid
-
     @Test
     public void shouldCreateSuccessWhenCallingValidationSuccess() {
         assertThat(Validation.valid(1) instanceof Validation.Valid).isTrue();
     }
 
-    @Test
-    public void shouldCreateSuccessWhenCallingValidationSuccessSupplier() {
-        assertThat(Validation.valid(() -> 1) instanceof Validation.Valid).isTrue();
-    }
-
     // -- Validation.invalid
-
     @Test
     public void shouldCreateFailureWhenCallingValidationFailure() {
         assertThat(Validation.invalid("error") instanceof Validation.Invalid).isTrue();
     }
 
-    @Test
-    public void shouldCreateFailureWhenCallingValidationFailureSupplier() {
-        assertThat(Validation.invalid(() -> "error") instanceof Validation.Invalid).isTrue();
-    }
-
     // -- fold
-
     @Test
     public void shouldConvertSuccessToU() {
-        Validation<List<String>,String> validValidation = valid();
+        Validation<List<String>, String> validValidation = valid();
         Integer result = validValidation.fold(List::length, String::length);
         assertThat(result).isEqualTo(2);
     }
 
     @Test
     public void shouldConvertFailureToU() {
-        Validation<List<String>,String> invalidValidation = invalid();
+        Validation<List<String>, String> invalidValidation = invalid();
         Integer result = invalidValidation.fold(List::length, String::length);
         assertThat(result).isEqualTo(3);
     }
 
     // -- swap
-
     @Test
     public void shouldSwapSuccessToFailure() {
         assertThat(valid().swap() instanceof Validation.Invalid).isTrue();
@@ -73,98 +58,85 @@ public class ValidationTest {
     }
 
     // -- map
-
     @Test
     public void shouldMapSuccessValue() {
-        assertThat(valid().map(s -> s + "!").get()).isEqualTo(OK + "!");
+        assertThat(valid().map(( s) -> s + "!").get()).isEqualTo(OK + "!");
     }
 
     @Test
     public void shouldMapFailureError() {
-        assertThat(invalid().map(s -> 2).getError()).isEqualTo(ERRORS);
+        assertThat(invalid().map(( s) -> 2).getError()).isEqualTo(ERRORS);
     }
 
     @Test(expected = RuntimeException.class)
     public void shouldMapFailureErrorOnGet() {
-        assertThat(invalid().map(s -> 2).get()).isEqualTo(ERRORS);
+        assertThat(invalid().map(( s) -> 2).get()).isEqualTo(ERRORS);
     }
 
     // -- bimap
-
     @Test
     public void shouldMapOnlySuccessValue() {
-        Validation<List<String>,String> validValidation = valid();
-        Validation<Integer,Integer> validMapping = validValidation.bimap(List::length, String::length);
+        Validation<List<String>, String> validValidation = valid();
+        Validation<Integer, Integer> validMapping = validValidation.bimap(List::length, String::length);
         assertThat(validMapping instanceof Validation.Valid).isTrue();
         assertThat(validMapping.get()).isEqualTo(2);
     }
 
     @Test
     public void shouldMapOnlyFailureValue() {
-        Validation<List<String>,String> invalidValidation = invalid();
-        Validation<Integer,Integer> invalidMapping = invalidValidation.bimap(List::length, String::length);
+        Validation<List<String>, String> invalidValidation = invalid();
+        Validation<Integer, Integer> invalidMapping = invalidValidation.bimap(List::length, String::length);
         assertThat(invalidMapping instanceof Validation.Invalid).isTrue();
         assertThat(invalidMapping.getError()).isEqualTo(3);
     }
 
     // -- leftMap
-
     @Test
     public void shouldNotMapSuccess() {
-        assertThat(valid().leftMap(x -> 2).get()).isEqualTo(OK);
+        assertThat(valid().leftMap(( x) -> 2).get()).isEqualTo(OK);
     }
 
     @Test
     public void shouldMapFailure() {
-        assertThat(invalid().leftMap(x -> 5).getError()).isEqualTo(5);
+        assertThat(invalid().leftMap(( x) -> 5).getError()).isEqualTo(5);
     }
 
     // -- forEach
-
     @Test
     public void shouldProcessFunctionInForEach() {
         final java.util.List<String> accumulator = new ArrayList<>();
-
-        Validation<String,String>  v1 = Validation.valid("valid");
-        Validation<String,String>  v2 = Validation.invalid("error");
-
+        Validation<String, String> v1 = Validation.valid("valid");
+        Validation<String, String> v2 = Validation.invalid("error");
         accumulator.clear();
         v1.forEach(accumulator::add);
         assertThat(accumulator.size()).isEqualTo(1);
         assertThat(accumulator.get(0)).isEqualTo("valid");
-
         accumulator.clear();
         v2.forEach(accumulator::add);
         assertThat(accumulator.size()).isEqualTo(0);
     }
 
     // -- combine and apply
-
     @Test
     public void shouldBuildUpForSuccessCombine() {
-        Validation<String,String>  v1 = Validation.valid("John Doe");
-        Validation<String,Integer> v2 = Validation.valid(39);
-        Validation<String,Option<String>> v3 = Validation.valid(Option.of("address"));
-        Validation<String,Option<String>> v4 = Validation.valid(Option.none());
-        Validation<String,String>  v5 = Validation.valid("111-111-1111");
-        Validation<String,String>  v6 = Validation.valid("alt1");
-        Validation<String,String>  v7 = Validation.valid("alt2");
-        Validation<String,String>  v8 = Validation.valid("alt3");
-        Validation<String,String>  v9 = Validation.valid("alt4");
-
-        Validation<List<String>,TestValidation> result  = v1.combine(v2).ap(TestValidation::new);
-
-        Validation<List<String>,TestValidation> result2 = v1.combine(v2).combine(v3).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result3 = v1.combine(v2).combine(v4).ap(TestValidation::new);
-
-        Validation<List<String>,TestValidation> result4 = v1.combine(v2).combine(v3).combine(v5).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result5 = v1.combine(v2).combine(v3).combine(v5).combine(v6).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result6 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result7 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).combine(v8).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result8 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).combine(v8).combine(v9).ap(TestValidation::new);
-
-        Validation<List<String>,String> result9 = v1.combine(v2).combine(v3).ap((p1, p2, p3) -> p1+":"+p2+":"+p3.orElse("none"));
-
+        Validation<String, String> v1 = Validation.valid("John Doe");
+        Validation<String, Integer> v2 = Validation.valid(39);
+        Validation<String, Option<String>> v3 = Validation.valid(Option.of("address"));
+        Validation<String, Option<String>> v4 = Validation.valid(Option.none());
+        Validation<String, String> v5 = Validation.valid("111-111-1111");
+        Validation<String, String> v6 = Validation.valid("alt1");
+        Validation<String, String> v7 = Validation.valid("alt2");
+        Validation<String, String> v8 = Validation.valid("alt3");
+        Validation<String, String> v9 = Validation.valid("alt4");
+        Validation<List<String>, TestValidation> result = v1.combine(v2).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result2 = v1.combine(v2).combine(v3).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result3 = v1.combine(v2).combine(v4).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result4 = v1.combine(v2).combine(v3).combine(v5).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result5 = v1.combine(v2).combine(v3).combine(v5).combine(v6).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result6 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result7 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).combine(v8).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result8 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).combine(v8).combine(v9).ap(TestValidation::new);
+        Validation<List<String>, String> result9 = v1.combine(v2).combine(v3).ap(( p1,  p2,  p3) -> p1 + ":" + p2 + ":" + p3.orElse("none"));
         assertThat(result.isValid()).isTrue();
         assertThat(result2.isValid()).isTrue();
         assertThat(result3.isValid()).isTrue();
@@ -174,35 +146,30 @@ public class ValidationTest {
         assertThat(result7.isValid()).isTrue();
         assertThat(result8.isValid()).isTrue();
         assertThat(result9.isValid()).isTrue();
-
         assertThat(result.get() instanceof TestValidation).isTrue();
         assertThat(result9.get() instanceof String).isTrue();
     }
 
     @Test
     public void shouldBuildUpForSuccessMapN() {
-        Validation<String,String>  v1 = Validation.valid("John Doe");
-        Validation<String,Integer> v2 = Validation.valid(39);
-        Validation<String,Option<String>> v3 = Validation.valid(Option.of("address"));
-        Validation<String,Option<String>> v4 = Validation.valid(Option.none());
-        Validation<String,String>  v5 = Validation.valid("111-111-1111");
-        Validation<String,String>  v6 = Validation.valid("alt1");
-        Validation<String,String>  v7 = Validation.valid("alt2");
-        Validation<String,String>  v8 = Validation.valid("alt3");
-        Validation<String,String>  v9 = Validation.valid("alt4");
-
-        // Alternative map(n) functions to the 'combine' function
-        Validation<List<String>,TestValidation> result  = Validation.combine(v1, v2).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result2 = Validation.combine(v1, v2, v3).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result3 = Validation.combine(v1, v2, v4).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result4 = Validation.combine(v1, v2, v3, v5).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result5 = Validation.combine(v1, v2, v3, v5, v6).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result6 = Validation.combine(v1, v2, v3, v5, v6, v7).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result7 = Validation.combine(v1, v2, v3, v5, v6, v7, v8).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result8 = Validation.combine(v1, v2, v3, v5, v6, v7, v8, v9).ap(TestValidation::new);
-
-        Validation<List<String>,String> result9 = Validation.combine(v1, v2, v3).ap((p1, p2, p3) -> p1+":"+p2+":"+p3.orElse("none"));
-
+        Validation<String, String> v1 = Validation.valid("John Doe");
+        Validation<String, Integer> v2 = Validation.valid(39);
+        Validation<String, Option<String>> v3 = Validation.valid(Option.of("address"));
+        Validation<String, Option<String>> v4 = Validation.valid(Option.none());
+        Validation<String, String> v5 = Validation.valid("111-111-1111");
+        Validation<String, String> v6 = Validation.valid("alt1");
+        Validation<String, String> v7 = Validation.valid("alt2");
+        Validation<String, String> v8 = Validation.valid("alt3");
+        Validation<String, String> v9 = Validation.valid("alt4");
+        Validation<List<String>, TestValidation> result = Validation.combine(v1, v2).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result2 = Validation.combine(v1, v2, v3).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result3 = Validation.combine(v1, v2, v4).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result4 = Validation.combine(v1, v2, v3, v5).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result5 = Validation.combine(v1, v2, v3, v5, v6).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result6 = Validation.combine(v1, v2, v3, v5, v6, v7).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result7 = Validation.combine(v1, v2, v3, v5, v6, v7, v8).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result8 = Validation.combine(v1, v2, v3, v5, v6, v7, v8, v9).ap(TestValidation::new);
+        Validation<List<String>, String> result9 = Validation.combine(v1, v2, v3).ap(( p1,  p2,  p3) -> p1 + ":" + p2 + ":" + p3.orElse("none"));
         assertThat(result.isValid()).isTrue();
         assertThat(result2.isValid()).isTrue();
         assertThat(result3.isValid()).isTrue();
@@ -212,50 +179,42 @@ public class ValidationTest {
         assertThat(result7.isValid()).isTrue();
         assertThat(result8.isValid()).isTrue();
         assertThat(result9.isValid()).isTrue();
-
         assertThat(result.get() instanceof TestValidation).isTrue();
         assertThat(result9.get() instanceof String).isTrue();
     }
 
     @Test
     public void shouldBuildUpForFailure() {
-        Validation<String,String>  v1 = Validation.valid("John Doe");
-        Validation<String,Integer> v2 = Validation.valid(39);
-        Validation<String,Option<String>> v3 = Validation.valid(Option.of("address"));
-
-        Validation<String,String>  e1 = Validation.invalid("error2");
-        Validation<String,Integer> e2 = Validation.invalid("error1");
-        Validation<String,Option<String>>  e3 = Validation.invalid("error3");
-
-        Validation<List<String>,TestValidation> result  = v1.combine(e2).combine(v3).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result2 = e1.combine(v2).combine(e3).ap(TestValidation::new);
-
+        Validation<String, String> v1 = Validation.valid("John Doe");
+        Validation<String, Integer> v2 = Validation.valid(39);
+        Validation<String, Option<String>> v3 = Validation.valid(Option.of("address"));
+        Validation<String, String> e1 = Validation.invalid("error2");
+        Validation<String, Integer> e2 = Validation.invalid("error1");
+        Validation<String, Option<String>> e3 = Validation.invalid("error3");
+        Validation<List<String>, TestValidation> result = v1.combine(e2).combine(v3).ap(TestValidation::new);
+        Validation<List<String>, TestValidation> result2 = e1.combine(v2).combine(e3).ap(TestValidation::new);
         assertThat(result.isInvalid()).isTrue();
         assertThat(result2.isInvalid()).isTrue();
     }
 
     // -- miscellaneous
-
     @Test(expected = RuntimeException.class)
     public void shouldThrowErrorOnGetErrorValid() {
-        Validation<String,String> v1 = valid();
+        Validation<String, String> v1 = valid();
         v1.getError();
     }
 
     @Test
     public void shouldMatchLikeObjects() {
-        Validation<String,String> v1 = Validation.valid("test");
-        Validation<String,String> v2 = Validation.valid("test");
-        Validation<String,String> v3 = Validation.valid("test diff");
-
-        Validation<String,String> e1 = Validation.invalid("error1");
-        Validation<String,String> e2 = Validation.invalid("error1");
-        Validation<String,String> e3 = Validation.invalid("error diff");
-
+        Validation<String, String> v1 = Validation.valid("test");
+        Validation<String, String> v2 = Validation.valid("test");
+        Validation<String, String> v3 = Validation.valid("test diff");
+        Validation<String, String> e1 = Validation.invalid("error1");
+        Validation<String, String> e2 = Validation.invalid("error1");
+        Validation<String, String> e3 = Validation.invalid("error diff");
         assertThat(v1.equals(v1)).isTrue();
         assertThat(v1.equals(v2)).isTrue();
         assertThat(v1.equals(v3)).isFalse();
-
         assertThat(e1.equals(e1)).isTrue();
         assertThat(e1.equals(e2)).isTrue();
         assertThat(e1.equals(e3)).isFalse();
@@ -263,40 +222,45 @@ public class ValidationTest {
 
     @Test
     public void shouldReturnCorrectStringForToString() {
-        Validation<String,String> v1 = Validation.valid("test");
-        Validation<String,String> v2 = Validation.invalid("error");
-
+        Validation<String, String> v1 = Validation.valid("test");
+        Validation<String, String> v2 = Validation.invalid("error");
         assertThat(v1.toString()).isEqualTo("Valid(test)");
         assertThat(v2.toString()).isEqualTo("Invalid(error)");
     }
 
     @Test
     public void shouldReturnHashCode() {
-        Validation<String,String> v1 = Validation.valid("test");
-        Validation<String,String> e1 = Validation.invalid("error");
-
+        Validation<String, String> v1 = Validation.valid("test");
+        Validation<String, String> e1 = Validation.invalid("error");
         assertThat(v1.hashCode()).isEqualTo(Objects.hashCode(v1));
         assertThat(e1.hashCode()).isEqualTo(Objects.hashCode(e1));
     }
 
     // ------------------------------------------------------------------------------------------ //
-
-    private <E> Validation<E,String> valid() {
+    private <E extends java.lang.Object> Validation<E, String> valid() {
         return Validation.valid(OK);
     }
 
-    private <T> Validation<List<String>,T> invalid() {
+    private <T extends java.lang.Object> Validation<List<String>, T> invalid() {
         return Validation.invalid(ERRORS);
     }
 
     public static class TestValidation {
+
         public String name;
+
         public Integer age;
+
         public Option<String> address;
+
         public String phone;
+
         public String alt1;
+
         public String alt2;
+
         public String alt3;
+
         public String alt4;
 
         public TestValidation(String name, Integer age) {
@@ -358,8 +322,7 @@ public class ValidationTest {
 
         @Override
         public String toString() {
-            return "TestValidation("+name+","+age+","+address.orElse("none")+phone+","+")";
+            return "TestValidation(" + name + "," + age + "," + address.orElse("none") + phone + "," + ")";
         }
     }
-
 }

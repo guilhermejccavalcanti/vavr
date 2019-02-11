@@ -12,7 +12,6 @@ import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.Match;
 import javaslang.control.Option;
-
 import java.util.*;
 import java.util.function.*;
 
@@ -44,7 +43,6 @@ import java.util.function.*;
 public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     // DEV-NOTE: we prefer returning empty() over this if !hasNext() == true in order to free memory.
-
     /**
      * The empty Iterator.
      */
@@ -68,9 +66,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    @SuppressWarnings("varargs")
+    @SuppressWarnings(value = { "varargs" })
     @SafeVarargs
-    static <T> Iterator<T> concat(Iterable<? extends T>... iterables) {
+    static <T extends java.lang.Object> Iterator<T> concat(Iterable<? extends T>... iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         if (iterables.length == 0) {
             return empty();
@@ -86,7 +84,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> concat(Iterable<? extends Iterable<? extends T>> iterables) {
+    static <T extends java.lang.Object> Iterator<T> concat(Iterable<? extends Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         if (!iterables.iterator().hasNext()) {
             return empty();
@@ -101,8 +99,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T> Component type
      * @return The empty Iterator
      */
-    @SuppressWarnings("unchecked")
-    static <T> Iterator<T> empty() {
+    @SuppressWarnings(value = { "unchecked" })
+    static <T extends java.lang.Object> Iterator<T> empty() {
         return (Iterator<T>) EMPTY;
     }
 
@@ -113,7 +111,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>     Component type.
      * @return A new Iterator
      */
-    static <T> Iterator<T> of(T element) {
+    static <T extends java.lang.Object> Iterator<T> of(T element) {
         return new AbstractIterator<T>() {
 
             boolean hasNext = true;
@@ -132,29 +130,33 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Creates an Iterator which traverses the given elements.
+     * Creates an Iterator which traverses one element.
      *
-     * @param elements Zero or more elements
-     * @param <T>      Component type
+     * @param element An element
+     * @param <T>     Component type.
      * @return A new Iterator
      */
     @SafeVarargs
-    static <T> Iterator<T> of(T... elements) {
+    static <T extends java.lang.Object> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<T>() {
+        if (elements.length == 0) {
+            return Iterator.empty();
+        } else {
+            return new AbstractIterator<T>() {
 
-            int index = 0;
+                int index = 0;
 
-            @Override
-            public boolean hasNext() {
-                return index < elements.length;
-            }
+                @Override
+                public boolean hasNext() {
+                    return index < elements.length;
+                }
 
-            @Override
-            public T getNext() {
-                return elements[index++];
-            }
-        };
+                @Override
+                public T getNext() {
+                    return elements[index++];
+                }
+            };
+        }
     }
 
     /**
@@ -165,8 +167,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>      Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    @SuppressWarnings("unchecked")
-    static <T> Iterator<T> ofAll(Iterable<? extends T> iterable) {
+    @SuppressWarnings(value = { "unchecked" })
+    static <T extends java.lang.Object> Iterator<T> ofAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Iterator) {
             return (Iterator<T>) iterable;
@@ -183,8 +185,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>      Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    @SuppressWarnings("unchecked")
-    static <T> Iterator<T> ofAll(java.util.Iterator<? extends T> iterator) {
+    @SuppressWarnings(value = { "unchecked" })
+    static <T extends java.lang.Object> Iterator<T> ofAll(java.util.Iterator<? extends T> iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
         if (iterator instanceof Iterator) {
             return (Iterator<T>) iterator;
@@ -213,6 +215,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Boolean>() {
+
             int i = 0;
 
             @Override
@@ -236,6 +239,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Byte>() {
+
             int i = 0;
 
             @Override
@@ -259,6 +263,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Character>() {
+
             int i = 0;
 
             @Override
@@ -282,6 +287,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Double>() {
+
             int i = 0;
 
             @Override
@@ -305,6 +311,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Float>() {
+
             int i = 0;
 
             @Override
@@ -328,6 +335,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Integer>() {
+
             int i = 0;
 
             @Override
@@ -351,6 +359,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Long>() {
+
             int i = 0;
 
             @Override
@@ -374,6 +383,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Short>() {
+
             int i = 0;
 
             @Override
@@ -398,7 +408,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return An Iterator on a sequence of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    static <T extends java.lang.Object> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Collections.tabulate(n, f);
     }
@@ -412,7 +422,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return An iterator on a sequence of {@code n} elements, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    static <T> Iterator<T> fill(int n, Supplier<? extends T> s) {
+    static <T extends java.lang.Object> Iterator<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s);
     }
@@ -457,47 +467,57 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Character> rangeBy(char from, char toExclusive, int step) {
-        return Iterator.rangeBy((int) from, (int) toExclusive, step).map(i -> (char) i.shortValue());
+        return Iterator.rangeBy((int) from, (int) toExclusive, step).map(( i) -> (char) i.shortValue());
     }
 
     static Iterator<Double> rangeBy(double from, double toExclusive, double step) {
         if (Double.isNaN(from)) {
             throw new IllegalArgumentException("from is NaN");
-        } else if (Double.isNaN(toExclusive)) {
-            throw new IllegalArgumentException("toExclusive is NaN");
-        } else if (Double.isNaN(step)) {
-            throw new IllegalArgumentException("step is NaN");
-        } else if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (step * (from - toExclusive) >= 0) {
-            return Iterator.empty();
         } else {
-            return new AbstractIterator<Double>() {
-
-                double prev = Double.NaN;
-                double curr = from;
-                boolean hasNext = true;
-
-                @Override
-                public boolean hasNext() {
-                    return hasNext;
-                }
-
-                @Override
-                public Double getNext() {
-                    final double next = curr;
-                    if ((step > 0 && curr + step >= toExclusive) || (step < 0 && curr + step <= toExclusive)) {
-                        hasNext = false;
+            if (Double.isNaN(toExclusive)) {
+                throw new IllegalArgumentException("toExclusive is NaN");
+            } else {
+                if (Double.isNaN(step)) {
+                    throw new IllegalArgumentException("step is NaN");
+                } else {
+                    if (step == 0) {
+                        throw new IllegalArgumentException("step cannot be 0");
                     } else {
-                        prev = curr;
-                        curr += step;
-                        if (curr == prev) {
-                            hasNext = false;
+                        if (step * (from - toExclusive) >= 0) {
+                            return Iterator.empty();
+                        } else {
+                            return new AbstractIterator<Double>() {
+
+                                double prev = Double.NaN;
+
+                                double curr = from;
+
+                                boolean hasNext = true;
+
+                                @Override
+                                public boolean hasNext() {
+                                    return hasNext;
+                                }
+
+                                @Override
+                                public Double getNext() {
+                                    final double next = curr;
+                                    if ((step > 0 && curr + step >= toExclusive) || (step < 0 && curr + step <= toExclusive)) {
+                                        hasNext = false;
+                                    } else {
+                                        prev = curr;
+                                        curr += step;
+                                        if (curr == prev) {
+                                            hasNext = false;
+                                        }
+                                    }
+                                    return next;
+                                }
+                            };
                         }
                     }
-                    return next;
                 }
-            };
+            }
         }
     }
 
@@ -631,49 +651,61 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Character> rangeClosedBy(char from, char toInclusive, int step) {
-        return Iterator.rangeClosedBy((int) from, (int) toInclusive, step).map(i -> (char) i.shortValue());
+        return Iterator.rangeClosedBy((int) from, (int) toInclusive, step).map(( i) -> (char) i.shortValue());
     }
 
     static Iterator<Double> rangeClosedBy(double from, double toInclusive, double step) {
         if (Double.isNaN(from)) {
             throw new IllegalArgumentException("from is NaN");
-        } else if (Double.isNaN(toInclusive)) {
-            throw new IllegalArgumentException("toInclusive is NaN");
-        } else if (Double.isNaN(step)) {
-            throw new IllegalArgumentException("step is NaN");
-        } else if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return Iterator.of(from);
-        } else if (step * (from - toInclusive) > 0) {
-            return Iterator.empty();
         } else {
-            return new AbstractIterator<Double>() {
-
-                double prev = Double.NaN;
-                double curr = from;
-                boolean hasNext = true;
-
-                @Override
-                public boolean hasNext() {
-                    return hasNext;
-                }
-
-                @Override
-                public Double getNext() {
-                    final double next = curr;
-                    if ((step > 0 && curr + step > toInclusive) || (step < 0 && curr + step < toInclusive)) {
-                        hasNext = false;
+            if (Double.isNaN(toInclusive)) {
+                throw new IllegalArgumentException("toInclusive is NaN");
+            } else {
+                if (Double.isNaN(step)) {
+                    throw new IllegalArgumentException("step is NaN");
+                } else {
+                    if (step == 0) {
+                        throw new IllegalArgumentException("step cannot be 0");
                     } else {
-                        prev = curr;
-                        curr += step;
-                        if (curr == prev) {
-                            hasNext = false;
+                        if (from == toInclusive) {
+                            return Iterator.of(from);
+                        } else {
+                            if (step * (from - toInclusive) > 0) {
+                                return Iterator.empty();
+                            } else {
+                                return new AbstractIterator<Double>() {
+
+                                    double prev = Double.NaN;
+
+                                    double curr = from;
+
+                                    boolean hasNext = true;
+
+                                    @Override
+                                    public boolean hasNext() {
+                                        return hasNext;
+                                    }
+
+                                    @Override
+                                    public Double getNext() {
+                                        final double next = curr;
+                                        if ((step > 0 && curr + step > toInclusive) || (step < 0 && curr + step < toInclusive)) {
+                                            hasNext = false;
+                                        } else {
+                                            prev = curr;
+                                            curr += step;
+                                            if (curr == prev) {
+                                                hasNext = false;
+                                            }
+                                        }
+                                        return next;
+                                    }
+                                };
+                            }
                         }
                     }
-                    return next;
                 }
-            };
+            }
         }
     }
 
@@ -720,32 +752,37 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return Iterator.of(from);
-        } else if (Integer.signum(step) * Integer.signum(from - toInclusive) > 0) {
-            return Iterator.empty();
         } else {
-            return new AbstractIterator<Integer>() {
+            if (from == toInclusive) {
+                return Iterator.of(from);
+            } else {
+                if (Integer.signum(step) * Integer.signum(from - toInclusive) > 0) {
+                    return Iterator.empty();
+                } else {
+                    return new AbstractIterator<Integer>() {
 
-                int i = from;
-                boolean hasNext = true;
+                        int i = from;
 
-                @Override
-                public boolean hasNext() {
-                    return hasNext;
+                        boolean hasNext = true;
+
+                        @Override
+                        public boolean hasNext() {
+                            return hasNext;
+                        }
+
+                        @Override
+                        public Integer getNext() {
+                            final int next = i;
+                            if ((step > 0 && i > toInclusive - step) || (step < 0 && i < toInclusive - step)) {
+                                hasNext = false;
+                            } else {
+                                i += step;
+                            }
+                            return next;
+                        }
+                    };
                 }
-
-                @Override
-                public Integer getNext() {
-                    final int next = i;
-                    if ((step > 0 && i > toInclusive - step) || (step < 0 && i < toInclusive - step)) {
-                        hasNext = false;
-                    } else {
-                        i += step;
-                    }
-                    return next;
-                }
-            };
+            }
         }
     }
 
@@ -792,32 +829,37 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Long> rangeClosedBy(long from, long toInclusive, long step) {
         if (step == 0L) {
             throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return Iterator.of(from);
-        } else if (Long.signum(step) * Long.signum(from - toInclusive) > 0L) {
-            return Iterator.empty();
         } else {
-            return new AbstractIterator<Long>() {
+            if (from == toInclusive) {
+                return Iterator.of(from);
+            } else {
+                if (Long.signum(step) * Long.signum(from - toInclusive) > 0L) {
+                    return Iterator.empty();
+                } else {
+                    return new AbstractIterator<Long>() {
 
-                long i = from;
-                boolean hasNext = true;
+                        long i = from;
 
-                @Override
-                public boolean hasNext() {
-                    return hasNext;
+                        boolean hasNext = true;
+
+                        @Override
+                        public boolean hasNext() {
+                            return hasNext;
+                        }
+
+                        @Override
+                        public Long getNext() {
+                            final long next = i;
+                            if ((step > 0L && i > toInclusive - step) || (step < 0L && i < toInclusive - step)) {
+                                hasNext = false;
+                            } else {
+                                i += step;
+                            }
+                            return next;
+                        }
+                    };
                 }
-
-                @Override
-                public Long getNext() {
-                    final long next = i;
-                    if ((step > 0L && i > toInclusive - step) || (step < 0L && i < toInclusive - step)) {
-                        hasNext = false;
-                    } else {
-                        i += step;
-                    }
-                    return next;
-                }
-            };
+            }
         }
     }
 
@@ -831,6 +873,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Integer> from(int value) {
         return new AbstractIterator<Integer>() {
+
             private int next = value;
 
             @Override
@@ -855,6 +898,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Long> from(long value) {
         return new AbstractIterator<Long>() {
+
             private long next = value;
 
             @Override
@@ -876,9 +920,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>      value type
      * @return A new {@code Iterator}
      */
-    static <T> Iterator<T> gen(Supplier<? extends T> supplier) {
+    static <T extends java.lang.Object> Iterator<T> gen(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new AbstractIterator<T>() {
+
             @Override
             public boolean hasNext() {
                 return true;
@@ -900,9 +945,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>  value type
      * @return A new {@code Iterator}
      */
-    static <T> Iterator<T> gen(T seed, Function<? super T, ? extends T> f) {
+    static <T extends java.lang.Object> Iterator<T> gen(T seed, Function<? super T, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return new AbstractIterator<T>() {
+
             T next = seed;
 
             @Override
@@ -926,8 +972,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T> Element type
      * @return A new Iterator containing infinite {@code t}'s.
      */
-    static <T> Iterator<T> repeat(T t) {
+    static <T extends java.lang.Object> Iterator<T> repeat(T t) {
         return new AbstractIterator<T>() {
+
             @Override
             public boolean hasNext() {
                 return true;
@@ -941,16 +988,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     // -- Additional methods of Iterator
-
     // DEV-NOTE: cannot use arg Iterable, it would be ambiguous
     default Iterator<T> concat(java.util.Iterator<T> that) {
         Objects.requireNonNull(that, "that is null");
         if (!that.hasNext()) {
             return this;
-        } else if (!hasNext()) {
-            return Iterator.ofAll(that);
         } else {
-            return Iterator.concat(this, Iterator.ofAll(that));
+            if (!hasNext()) {
+                return Iterator.ofAll(that);
+            } else {
+                return Iterator.concat(this, Iterator.ofAll(that));
+            }
         }
     }
 
@@ -996,13 +1044,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super Iterator<? super T>, ? extends U> f) {
+    default <U extends java.lang.Object> U transform(Function<? super Iterator<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
     @Override
-    default <U> Iterator<Tuple2<T, U>> zip(Iterable<U> that) {
+    default <U extends java.lang.Object> Iterator<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
             return empty();
@@ -1010,6 +1058,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             final Iterator<T> it1 = this;
             final java.util.Iterator<U> it2 = that.iterator();
             return new AbstractIterator<Tuple2<T, U>>() {
+
                 @Override
                 public boolean hasNext() {
                     return it1.hasNext() && it2.hasNext();
@@ -1024,7 +1073,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default <U> Iterator<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    default <U extends java.lang.Object> Iterator<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         final java.util.Iterator<U> thatIt = that.iterator();
         if (isEmpty() && !thatIt.hasNext()) {
@@ -1032,6 +1081,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             final Iterator<T> thisIt = this;
             return new AbstractIterator<Tuple2<T, U>>() {
+
                 @Override
                 public boolean hasNext() {
                     return thisIt.hasNext() || thatIt.hasNext();
@@ -1054,6 +1104,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             final Iterator<T> it1 = this;
             return new AbstractIterator<Tuple2<T, Integer>>() {
+
                 private int index = 0;
 
                 @Override
@@ -1070,31 +1121,28 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default <T1 extends java.lang.Object, T2 extends java.lang.Object> Tuple2<Iterator<T1>, Iterator<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
             final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(this.map(unzipper));
-            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator());
+            return Tuple.of(source.map(( t) -> (T1) t._1).iterator(), source.map(( t) -> (T2) t._2).iterator());
         }
     }
 
     @Override
-    default <T1, T2, T3> Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> unzip3(
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    default <T1 extends java.lang.Object, T2 extends java.lang.Object, T3 extends java.lang.Object> Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (!hasNext()) {
             return Tuple.of(empty(), empty(), empty());
         } else {
             final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> source = Stream.ofAll(this.map(unzipper));
-            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator(), source.map(t -> (T3) t._3).iterator());
+            return Tuple.of(source.map(( t) -> (T1) t._1).iterator(), source.map(( t) -> (T2) t._2).iterator(), source.map(( t) -> (T3) t._3).iterator());
         }
     }
 
     // -- Overridden methods of Traversable
-
     @Override
     default Iterator<T> clear() {
         return empty();
@@ -1120,7 +1168,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default <U> Iterator<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+    default <U extends java.lang.Object> Iterator<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         if (!hasNext()) {
             return empty();
@@ -1139,28 +1187,30 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default Iterator<T> drop(int n) {
         if (n <= 0) {
             return this;
-        } else if (!hasNext()) {
-            return empty();
         } else {
-            final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            if (!hasNext()) {
+                return empty();
+            } else {
+                final Iterator<T> that = this;
+                return new AbstractIterator<T>() {
 
-                int count = n;
+                    int count = n;
 
-                @Override
-                public boolean hasNext() {
-                    while (count > 0 && that.hasNext()) {
-                        that.next(); // discarded
-                        count--;
+                    @Override
+                    public boolean hasNext() {
+                        while (count > 0 && that.hasNext()) {
+                            that.next();
+                            count--;
+                        }
+                        return that.hasNext();
                     }
-                    return that.hasNext();
-                }
 
-                @Override
-                public T getNext() {
-                    return that.next();
-                }
-            };
+                    @Override
+                    public T getNext() {
+                        return that.next();
+                    }
+                };
+            }
         }
     }
 
@@ -1168,28 +1218,31 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default Iterator<T> dropRight(int n) {
         if (n <= 0) {
             return this;
-        } else if (!hasNext()) {
-            return empty();
         } else {
-            final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
-                private Queue<T> queue = Queue.empty();
+            if (!hasNext()) {
+                return empty();
+            } else {
+                final Iterator<T> that = this;
+                return new AbstractIterator<T>() {
 
-                @Override
-                public boolean hasNext() {
-                    while (queue.length() < n && that.hasNext()) {
-                        queue = queue.append(that.next());
+                    private Queue<T> queue = Queue.empty();
+
+                    @Override
+                    public boolean hasNext() {
+                        while (queue.length() < n && that.hasNext()) {
+                            queue = queue.append(that.next());
+                        }
+                        return queue.length() == n && that.hasNext();
                     }
-                    return queue.length() == n && that.hasNext();
-                }
 
-                @Override
-                public T getNext() {
-                    Tuple2<T, Queue<T>> t = queue.append(that.next()).dequeue();
-                    queue = t._2;
-                    return t._1;
-                }
-            };
+                    @Override
+                    public T getNext() {
+                        Tuple2<T, Queue<T>> t = queue.append(that.next()).dequeue();
+                        queue = t._2;
+                        return t._1;
+                    }
+                };
+            }
         }
     }
 
@@ -1296,7 +1349,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return A new Iterable
      */
     @Override
-    default <U> Iterator<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U extends java.lang.Object> Iterator<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
             return empty();
@@ -1305,6 +1358,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return new AbstractIterator<U>() {
 
                 final Iterator<? extends T> inputs = that;
+
                 java.util.Iterator<? extends U> current = java.util.Collections.emptyIterator();
 
                 @Override
@@ -1323,9 +1377,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             };
         }
     }
-    
+
     @Override
-    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+    default <U extends java.lang.Object> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return Stream.ofAll(this).foldRight(zero, f);
     }
@@ -1336,17 +1390,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default <C> Map<C, Iterator<T>> groupBy(Function<? super T, ? extends C> classifier) {
+    default <C extends java.lang.Object> Map<C, Iterator<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
         if (!hasNext()) {
             return HashMap.empty();
         } else {
-            Map<C, Stream<T>> streams = foldLeft(HashMap.empty(), (map, entry) -> {
+            Map<C, Stream<T>> streams = foldLeft(HashMap.empty(), ( map,  entry) -> {
                 final C key = classifier.apply(entry);
-                final Stream<T> values = map.get(key).map(entries -> entries.append(entry)).orElse(Stream.of(entry));
+                final Stream<T> values = map.get(key).map(( entries) -> entries.append(entry)).orElse(Stream.of(entry));
                 return map.put(key, values);
             });
-            return streams.map((c, ts) -> Tuple.of(c, ts.iterator()));
+            return streams.map(( c,  ts) -> Tuple.of(c, ts.iterator()));
         }
     }
 
@@ -1404,7 +1458,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default int length() {
-        return foldLeft(0, (n, ignored) -> n + 1);
+        return foldLeft(0, ( n,  ignored) -> n + 1);
     }
 
     /**
@@ -1415,7 +1469,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return A new Iterator
      */
     @Override
-    default <U> Iterator<U> map(Function<? super T, ? extends U> mapper) {
+    default <U extends java.lang.Object> Iterator<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
             return empty();
@@ -1462,6 +1516,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             final Iterator<T> that = this;
             return new AbstractIterator<T>() {
+
                 @Override
                 public boolean hasNext() {
                     return that.hasNext();
@@ -1495,7 +1550,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             throw new NoSuchElementException("reduceRight on Nil");
         } else {
             Stream<T> reversed = Stream.ofAll(this).reverse();
-            return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
+            return reversed.tail().foldLeft(reversed.head(), ( xs,  x) -> op.apply(x, xs));
         }
     }
 
@@ -1554,11 +1609,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(value = { "unchecked" })
     @Override
     default Iterator<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        // DEV-NOTE: Only Eclipse does need this unchecked cast, IntelliJ and javac are fine.
         return hasNext() ? filter(HashSet.ofAll((Iterable<T>) elements)::contains) : empty();
     }
 
@@ -1568,7 +1622,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default <U> Iterator<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+    default <U extends java.lang.Object> Iterator<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         if (isEmpty()) {
             return Iterator.of(zero);
@@ -1577,6 +1631,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return new AbstractIterator<U>() {
 
                 boolean isFirst = true;
+
                 U acc = zero;
 
                 @Override
@@ -1600,7 +1655,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     // not lazy!
     @Override
-    default <U> Iterator<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+    default <U extends java.lang.Object> Iterator<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         if (isEmpty()) {
             return Iterator.of(zero);
@@ -1624,7 +1679,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             final Stream<T> source = Stream.ofAll(this);
             return new AbstractIterator<Seq<T>>() {
+
                 private Stream<T> that = source;
+
                 private IndexedSeq<T> next = null;
 
                 @Override
@@ -1632,7 +1689,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                     while (next == null && !that.isEmpty()) {
                         final Tuple2<Stream<T>, Stream<T>> split = that.splitAt(size);
                         next = split._1.toVector();
-                        that = split._2.isEmpty() ? Stream.<T> empty() : that.drop(step);
+                        that = split._2.isEmpty() ? Stream.<T>empty() : that.drop(step);
                     }
                     return next != null;
                 }
@@ -1660,10 +1717,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Spliterator<T> spliterator() {
-        // the focus of the Stream API is on random-access collections of *known size*
         Stream<T> stream = Stream.ofAll(this);
-        return Spliterators.spliterator(stream.iterator(), stream.length(),
-                Spliterator.ORDERED | Spliterator.IMMUTABLE);
+        return Spliterators.spliterator(stream.iterator(), stream.length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override
@@ -1676,7 +1731,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             throw new UnsupportedOperationException();
         } else {
-            next(); // remove first element
+            next();
             return this;
         }
     }
@@ -1728,6 +1783,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             final Iterator<T> that = this;
             return new AbstractIterator<T>() {
+
                 private Queue<T> queue = Queue.empty();
 
                 @Override
@@ -1767,6 +1823,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return new AbstractIterator<T>() {
 
                 private T next = null;
+
                 private boolean finished = false;
 
                 @Override
@@ -1791,15 +1848,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             };
         }
     }
-    
+
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     default <U> Iterator<U> unit(Iterable<? extends U> iterable) {
-    	if (iterable instanceof Iterator) {
-    		return (Iterator<U>) iterable;
-    	} else {
-    		return Iterator.ofAll(iterable.iterator());
-    	}
+        if (iterable instanceof Iterator) {
+            return (Iterator<U>) iterable;
+        } else {
+            return Iterator.ofAll(iterable.iterator());
+        }
     }
 }
 
@@ -1808,6 +1865,7 @@ interface IteratorModule {
     final class ConcatIterator<T> extends AbstractIterator<T> {
 
         private final Iterator<? extends Iterator<? extends T>> iterators;
+
         private Iterator<? extends T> current;
 
         ConcatIterator(Iterator<? extends Iterator<? extends T>> iterators) {
@@ -1832,8 +1890,11 @@ interface IteratorModule {
     final class DistinctIterator<T, U> extends AbstractIterator<T> {
 
         private final Iterator<? extends T> that;
+
         private Set<U> known;
+
         private final Function<? super T, ? extends U> keyExtractor;
+
         private T next = null;
 
         DistinctIterator(Iterator<? extends T> that, Set<U> set, Function<? super T, ? extends U> keyExtractor) {

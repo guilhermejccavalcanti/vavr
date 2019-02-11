@@ -10,12 +10,10 @@ import javaslang.algebra.Applicative;
 import javaslang.algebra.BiFunctor;
 import javaslang.algebra.Kind2;
 import javaslang.collection.List;
-
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * An implementation similar to scalaz's <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a> control.
@@ -67,7 +65,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return {@code Valid(value)}
      * @throws NullPointerException if value is null
      */
-    static <E, T> Validation<E, T> valid(T value) {
+    static <E extends java.lang.Object, T extends java.lang.Object> Validation<E, T> valid(T value) {
         Objects.requireNonNull(value, "value is null");
         return new Valid<>(value);
     }
@@ -81,11 +79,6 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return {@code Valid(value)}
      * @throws NullPointerException if supplier is null
      */
-    static <E, T> Validation<E, T> valid(Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return new Valid<>(supplier.get());
-    }
-
     /**
      * Creates an {@link Invalid} that contains the given {@code error}.
      *
@@ -95,7 +88,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return {@code Invalid(error)}
      * @throws NullPointerException if error is null
      */
-    static <E, T> Validation<E, T> invalid(E error) {
+    static <E extends java.lang.Object, T extends java.lang.Object> Validation<E, T> invalid(E error) {
         Objects.requireNonNull(error, "error is null");
         return new Invalid<>(error);
     }
@@ -109,11 +102,6 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return {@code Invalid(error)}
      * @throws NullPointerException if supplier is null
      */
-    static <E, T> Validation<E, T> invalid(Supplier<? extends E> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return new Invalid<>(supplier.get());
-    }
-
     /**
      * Combines two {@code Validation}s into a {@link Builder}.
      *
@@ -125,7 +113,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return an instance of Builder&lt;E,T1,T2&gt;
      * @throws NullPointerException if validation1 or validation2 is null
      */
-    static <E, T1, T2> Builder<E, T1, T2> combine(Validation<E, T1> validation1, Validation<E, T2> validation2) {
+    static <E extends java.lang.Object, T1 extends java.lang.Object, T2 extends java.lang.Object> Builder<E, T1, T2> combine(Validation<E, T1> validation1, Validation<E, T2> validation2) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         return new Builder<>(validation1, validation2);
@@ -144,7 +132,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return an instance of Builder3&lt;E,T1,T2,T3&gt;
      * @throws NullPointerException if validation1, validation2 or validation3 is null
      */
-    static <E, T1, T2, T3> Builder3<E, T1, T2, T3> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3) {
+    static <E extends java.lang.Object, T1 extends java.lang.Object, T2 extends java.lang.Object, T3 extends java.lang.Object> Builder3<E, T1, T2, T3> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -166,7 +154,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4&gt;
      * @throws NullPointerException if validation1, validation2, validation3 or validation4 is null
      */
-    static <E, T1, T2, T3, T4> Builder4<E, T1, T2, T3, T4> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4) {
+    static <E extends java.lang.Object, T1 extends java.lang.Object, T2 extends java.lang.Object, T3 extends java.lang.Object, T4 extends java.lang.Object> Builder4<E, T1, T2, T3, T4> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -191,7 +179,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4 or validation5 is null
      */
-    static <E, T1, T2, T3, T4, T5> Builder5<E, T1, T2, T3, T4, T5> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5) {
+    static <E extends java.lang.Object, T1 extends java.lang.Object, T2 extends java.lang.Object, T3 extends java.lang.Object, T4 extends java.lang.Object, T5 extends java.lang.Object> Builder5<E, T1, T2, T3, T4, T5> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -219,7 +207,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5 or validation6 is null
      */
-    static <E, T1, T2, T3, T4, T5, T6> Builder6<E, T1, T2, T3, T4, T5, T6> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6) {
+    static <E extends java.lang.Object, T1 extends java.lang.Object, T2 extends java.lang.Object, T3 extends java.lang.Object, T4 extends java.lang.Object, T5 extends java.lang.Object, T6 extends java.lang.Object> Builder6<E, T1, T2, T3, T4, T5, T6> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -250,7 +238,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6 or validation7 is null
      */
-    static <E, T1, T2, T3, T4, T5, T6, T7> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6, Validation<E, T7> validation7) {
+    static <E extends java.lang.Object, T1 extends java.lang.Object, T2 extends java.lang.Object, T3 extends java.lang.Object, T4 extends java.lang.Object, T5 extends java.lang.Object, T6 extends java.lang.Object, T7 extends java.lang.Object> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6, Validation<E, T7> validation7) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -284,7 +272,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7,T8&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6, validation7 or validation8 is null
      */
-    static <E, T1, T2, T3, T4, T5, T6, T7, T8> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6, Validation<E, T7> validation7, Validation<E, T8> validation8) {
+    static <E extends java.lang.Object, T1 extends java.lang.Object, T2 extends java.lang.Object, T3 extends java.lang.Object, T4 extends java.lang.Object, T5 extends java.lang.Object, T6 extends java.lang.Object, T7 extends java.lang.Object, T8 extends java.lang.Object> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6, Validation<E, T7> validation7, Validation<E, T8> validation8) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -344,8 +332,9 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      */
     default void forEach(Consumer<? super T> action) {
         Objects.requireNonNull(action, "function f is null");
-        if (isValid())
+        if (isValid()) {
             action.accept(get());
+        }
     }
 
     /**
@@ -366,7 +355,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return an instance of type U
      * @throws NullPointerException if fInvalid or fValid is null
      */
-    default <U> U fold(Function<? super E, ? extends U> fInvalid, Function<? super T, ? extends U> fValid) {
+    default <U extends java.lang.Object> U fold(Function<? super E, ? extends U> fInvalid, Function<? super T, ? extends U> fValid) {
         Objects.requireNonNull(fInvalid, "function fInvalid null");
         Objects.requireNonNull(fValid, "function fValid null");
         if (isInvalid()) {
@@ -395,7 +384,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
     }
 
     @Override
-    default <U> Validation<E, U> map(Function<? super T, ? extends U> f) {
+    default <U extends java.lang.Object> Validation<E, U> map(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "function f is null");
         if (isInvalid()) {
             return Validation.invalid(this.getError());
@@ -420,7 +409,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @throws NullPointerException if invalidMapper or validMapper is null
      */
     @Override
-    default <U, R> Validation<U, R> bimap(Function<? super E, ? extends U> invalidMapper, Function<? super T, ? extends R> validMapper) {
+    default <U extends java.lang.Object, R extends java.lang.Object> Validation<U, R> bimap(Function<? super E, ? extends U> invalidMapper, Function<? super T, ? extends R> validMapper) {
         Objects.requireNonNull(invalidMapper, "function invalidMapper is null");
         Objects.requireNonNull(validMapper, "function validMapper is null");
         if (isInvalid()) {
@@ -441,7 +430,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return an instance of Validation&lt;U,T&gt;
      * @throws NullPointerException if mapping operation f is null
      */
-    default <U> Validation<U, T> leftMap(Function<? super E, ? extends U> f) {
+    default <U extends java.lang.Object> Validation<U, T> leftMap(Function<? super E, ? extends U> f) {
         Objects.requireNonNull(f, "function f is null");
         if (isInvalid()) {
             E error = this.getError();
@@ -451,29 +440,29 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(value = { "unchecked" })
     @Override
-    default <U> Validation<List<E>, U> ap(Kind2<Validation<?, ?>, List<E>, ? extends Function<? super T, ? extends U>> kind) {
+    default <U extends java.lang.Object> Validation<List<E>, U> ap(Kind2<Validation<?, ?>, List<E>, ? extends Function<? super T, ? extends U>> kind) {
         Objects.requireNonNull(kind, "kind is null");
         Validation<List<E>, ? extends Function<? super T, ? extends U>> validation = (Validation<List<E>, ? extends Function<? super T, ? extends U>>) ((Object) kind);
-
         if (isValid() && validation.isValid()) {
-            return valid(() -> {
-                Function<? super T, ? extends U> f = validation.get();
-                return f.apply(this.get());
-            });
-        } else if (isValid() && validation.isInvalid()) {
-            List<E> errors = validation.getError();
-            return invalid(errors);
-        } else if (isInvalid() && validation.isValid()) {
-            E error = this.getError();
-            return invalid(List.of(error));
+            Function<? super T, ? extends U> f = validation.get();
+            U u = f.apply(this.get());
+            return valid(u);
         } else {
-            return invalid(() -> {
+            if (isValid() && validation.isInvalid()) {
                 List<E> errors = validation.getError();
-                E error = this.getError();
-                return errors.append(error);
-            });
+                return invalid(errors);
+            } else {
+                if (isInvalid() && validation.isValid()) {
+                    E error = this.getError();
+                    return invalid(List.of(error));
+                } else {
+                    List<E> errors = validation.getError();
+                    E error = this.getError();
+                    return invalid(errors.append(error));
+                }
+            }
         }
     }
 
@@ -485,10 +474,9 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @param validation the validation object to combine this with
      * @return an instance of Builder
      */
-    default <U> Builder<E, T, U> combine(Validation<E, U> validation) {
+    default <U extends java.lang.Object> Builder<E, T, U> combine(Validation<E, U> validation) {
         return new Builder<>(this, validation);
     }
-
 
     /**
      * A valid Validation
@@ -500,11 +488,6 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
 
         private final T value;
 
-        /**
-         * Construct a {@code Valid}
-         *
-         * @param value The value of this success
-         */
         private Valid(T value) {
             this.value = value;
         }
@@ -526,7 +509,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
 
         @Override
         public E getError() throws RuntimeException {
-            throw new NoSuchElementException("error of 'valid' Validation");
+            throw new NoSuchElementException("error of \'valid\' Validation");
         }
 
         @Override
@@ -543,7 +526,6 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
         public String toString() {
             return "Valid(" + value + ")";
         }
-
     }
 
     /**
@@ -556,11 +538,6 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
 
         private final E error;
 
-        /**
-         * Construct an {@code Invalid}
-         *
-         * @param error The value of this error
-         */
         private Invalid(E error) {
             this.error = error;
         }
@@ -577,7 +554,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
 
         @Override
         public T get() throws RuntimeException {
-            throw new NoSuchElementException("get of 'invalid' Validation");
+            throw new NoSuchElementException("get of \'invalid\' Validation");
         }
 
         @Override
@@ -599,12 +576,12 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
         public String toString() {
             return "Invalid(" + error + ")";
         }
-
     }
 
     final class Builder<E, T1, T2> {
 
         private Validation<E, T1> v1;
+
         private Validation<E, T2> v2;
 
         private Builder(Validation<E, T1> v1, Validation<E, T2> v2) {
@@ -612,20 +589,21 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
             this.v2 = v2;
         }
 
-        public <R> Validation<List<E>, R> ap(Function2<T1, T2, R> f) {
+        public <R extends java.lang.Object> Validation<List<E>, R> ap(Function2<T1, T2, R> f) {
             return v2.ap(v1.ap(Validation.valid(f.curried())));
         }
 
-        public <T3> Builder3<E, T1, T2, T3> combine(Validation<E, T3> v3) {
+        public <T3 extends java.lang.Object> Builder3<E, T1, T2, T3> combine(Validation<E, T3> v3) {
             return new Builder3<>(v1, v2, v3);
         }
-
     }
 
     final class Builder3<E, T1, T2, T3> {
 
         private Validation<E, T1> v1;
+
         private Validation<E, T2> v2;
+
         private Validation<E, T3> v3;
 
         private Builder3(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3) {
@@ -634,21 +612,23 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
             this.v3 = v3;
         }
 
-        public <R> Validation<List<E>, R> ap(Function3<T1, T2, T3, R> f) {
+        public <R extends java.lang.Object> Validation<List<E>, R> ap(Function3<T1, T2, T3, R> f) {
             return v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))));
         }
 
-        public <T4> Builder4<E, T1, T2, T3, T4> combine(Validation<E, T4> v4) {
+        public <T4 extends java.lang.Object> Builder4<E, T1, T2, T3, T4> combine(Validation<E, T4> v4) {
             return new Builder4<>(v1, v2, v3, v4);
         }
-
     }
 
     final class Builder4<E, T1, T2, T3, T4> {
 
         private Validation<E, T1> v1;
+
         private Validation<E, T2> v2;
+
         private Validation<E, T3> v3;
+
         private Validation<E, T4> v4;
 
         private Builder4(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4) {
@@ -658,22 +638,25 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
             this.v4 = v4;
         }
 
-        public <R> Validation<List<E>, R> ap(Function4<T1, T2, T3, T4, R> f) {
+        public <R extends java.lang.Object> Validation<List<E>, R> ap(Function4<T1, T2, T3, T4, R> f) {
             return v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))));
         }
 
-        public <T5> Builder5<E, T1, T2, T3, T4, T5> combine(Validation<E, T5> v5) {
+        public <T5 extends java.lang.Object> Builder5<E, T1, T2, T3, T4, T5> combine(Validation<E, T5> v5) {
             return new Builder5<>(v1, v2, v3, v4, v5);
         }
-
     }
 
     final class Builder5<E, T1, T2, T3, T4, T5> {
 
         private Validation<E, T1> v1;
+
         private Validation<E, T2> v2;
+
         private Validation<E, T3> v3;
+
         private Validation<E, T4> v4;
+
         private Validation<E, T5> v5;
 
         private Builder5(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5) {
@@ -684,23 +667,27 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
             this.v5 = v5;
         }
 
-        public <R> Validation<List<E>, R> ap(Function5<T1, T2, T3, T4, T5, R> f) {
+        public <R extends java.lang.Object> Validation<List<E>, R> ap(Function5<T1, T2, T3, T4, T5, R> f) {
             return v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))));
         }
 
-        public <T6> Builder6<E, T1, T2, T3, T4, T5, T6> combine(Validation<E, T6> v6) {
+        public <T6 extends java.lang.Object> Builder6<E, T1, T2, T3, T4, T5, T6> combine(Validation<E, T6> v6) {
             return new Builder6<>(v1, v2, v3, v4, v5, v6);
         }
-
     }
 
     final class Builder6<E, T1, T2, T3, T4, T5, T6> {
 
         private Validation<E, T1> v1;
+
         private Validation<E, T2> v2;
+
         private Validation<E, T3> v3;
+
         private Validation<E, T4> v4;
+
         private Validation<E, T5> v5;
+
         private Validation<E, T6> v6;
 
         private Builder6(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5, Validation<E, T6> v6) {
@@ -712,24 +699,29 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
             this.v6 = v6;
         }
 
-        public <R> Validation<List<E>, R> ap(Function6<T1, T2, T3, T4, T5, T6, R> f) {
+        public <R extends java.lang.Object> Validation<List<E>, R> ap(Function6<T1, T2, T3, T4, T5, T6, R> f) {
             return v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))));
         }
 
-        public <T7> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(Validation<E, T7> v7) {
+        public <T7 extends java.lang.Object> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(Validation<E, T7> v7) {
             return new Builder7<>(v1, v2, v3, v4, v5, v6, v7);
         }
-
     }
 
     final class Builder7<E, T1, T2, T3, T4, T5, T6, T7> {
 
         private Validation<E, T1> v1;
+
         private Validation<E, T2> v2;
+
         private Validation<E, T3> v3;
+
         private Validation<E, T4> v4;
+
         private Validation<E, T5> v5;
+
         private Validation<E, T6> v6;
+
         private Validation<E, T7> v7;
 
         private Builder7(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5, Validation<E, T6> v6, Validation<E, T7> v7) {
@@ -742,25 +734,31 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
             this.v7 = v7;
         }
 
-        public <R> Validation<List<E>, R> ap(Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
+        public <R extends java.lang.Object> Validation<List<E>, R> ap(Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
             return v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))))));
         }
 
-        public <T8> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(Validation<E, T8> v8) {
+        public <T8 extends java.lang.Object> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(Validation<E, T8> v8) {
             return new Builder8<>(v1, v2, v3, v4, v5, v6, v7, v8);
         }
-
     }
 
     final class Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private Validation<E, T1> v1;
+
         private Validation<E, T2> v2;
+
         private Validation<E, T3> v3;
+
         private Validation<E, T4> v4;
+
         private Validation<E, T5> v5;
+
         private Validation<E, T6> v6;
+
         private Validation<E, T7> v7;
+
         private Validation<E, T8> v8;
 
         private Builder8(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5, Validation<E, T6> v6, Validation<E, T7> v7, Validation<E, T8> v8) {
@@ -774,7 +772,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
             this.v8 = v8;
         }
 
-        public <R> Validation<List<E>, R> ap(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
+        public <R extends java.lang.Object> Validation<List<E>, R> ap(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
             return v8.ap(v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))))));
         }
     }
